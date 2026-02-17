@@ -2,6 +2,8 @@
 using Backend2Torneios.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Backend2Torneios.Controllers;
 
@@ -30,6 +32,7 @@ public class ComentariosController : ControllerBase
 
     //POST: /comentarios
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult<Comentario>> PostComentario([FromBody] Comentario comentario)
     {
         if (string.IsNullOrEmpty(comentario.Texto))
@@ -37,11 +40,19 @@ public class ComentariosController : ControllerBase
             return BadRequest("O texto do comentário é obrigatório.");
         }
 
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized("Token válido, mas sem ID de jogador.");
+        }
+
+        comentario.JogadorId = userId; 
+        
         if (string.IsNullOrEmpty(comentario.Id))
         {
             comentario.Id = Guid.NewGuid().ToString();
         }
-        
         comentario.DataHora = DateTime.UtcNow;
 
         _context.Comentarios.Add(comentario);
