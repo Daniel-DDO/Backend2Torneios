@@ -24,12 +24,14 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<AppDbContext>();
-        context.Database.EnsureCreated();
-        Console.WriteLine("Conectado ao banco com sucesso!");
+        
+        Console.WriteLine("Verificando migrações pendentes...");
+        context.Database.Migrate(); 
+        Console.WriteLine("Banco atualizado com sucesso!");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Erro ao conectar no banco: {ex.Message}");
+        Console.WriteLine($"Erro ao atualizar o banco: {ex.Message}");
         if (ex.InnerException != null)
         {
             Console.WriteLine($"Detalhe do erro: {ex.InnerException.Message}");
