@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backend2Torneios", "Backend2Torneios\Backend2Torneios.csproj", "{F10CF68F-D3D8-425B-A193-E020C60C30C0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F10CF68F-D3D8-425B-A193-E020C60C30C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F10CF68F-D3D8-425B-A193-E020C60C30C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F10CF68F-D3D8-425B-A193-E020C60C30C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F10CF68F-D3D8-425B-A193-E020C60C30C0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
