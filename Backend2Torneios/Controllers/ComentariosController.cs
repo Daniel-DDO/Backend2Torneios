@@ -49,4 +49,26 @@ public class ComentariosController : ControllerBase
 
         return CreatedAtAction(nameof(GetPorPartida), new { partidaId = comentario.PartidaId }, comentario);
     }
+    
+    //DELETE: /comentarios/{id}?jogadorId=id-do-jogador
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteComentario(string id, [FromQuery] string jogadorId)
+    {
+        var comentario = await _context.Comentarios.FindAsync(id);
+
+        if (comentario == null)
+        {
+            return NotFound(new { mensagem = "Comentário não encontrado." });
+        }
+
+        if (comentario.JogadorId != jogadorId)
+        {
+            return StatusCode(403, new { mensagem = "Você não tem permissão para deletar este comentário." });
+        }
+
+        _context.Comentarios.Remove(comentario);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }
