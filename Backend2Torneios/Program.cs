@@ -54,6 +54,8 @@ var connectionString = $"Host={dbHost};Port={dbPort};Database={dbName};Username=
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
+builder.Services.AddHostedService<Backend2Torneios.Services.DatabaseKeepAliveService>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
