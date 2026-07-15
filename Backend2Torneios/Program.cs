@@ -72,8 +72,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-builder.Services.AddHostedService<DatabaseKeepAliveService>();
-
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
