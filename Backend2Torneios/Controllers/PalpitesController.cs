@@ -24,10 +24,15 @@ public class PalpitesController : ControllerBase
                              .OrderByDescending(p => p.DataPalpite)
                              .ToListAsync();
     }
-    
+
     [HttpGet("meu/{partidaId}")]
     public async Task<ActionResult<Palpite>> GetMeuPalpite(string partidaId, [FromQuery] string jogadorId)
     {
+        if (string.IsNullOrEmpty(jogadorId))
+        {
+            return BadRequest("jogadorId é obrigatório.");
+        }
+
         var palpite = await _context.Palpites
             .FirstOrDefaultAsync(p => p.PartidaId == partidaId && p.JogadorId == jogadorId);
 
@@ -44,8 +49,13 @@ public class PalpitesController : ControllerBase
             return BadRequest("Partida e Jogador são obrigatórios.");
         }
 
+        if (palpiteRecebido.PlacarMandante < 0 || palpiteRecebido.PlacarVisitante < 0)
+        {
+            return BadRequest("O placar não pode ser negativo.");
+        }
+
         var palpiteExistente = await _context.Palpites
-            .FirstOrDefaultAsync(p => p.PartidaId == palpiteRecebido.PartidaId && 
+            .FirstOrDefaultAsync(p => p.PartidaId == palpiteRecebido.PartidaId &&
                                       p.JogadorId == palpiteRecebido.JogadorId);
 
         if (palpiteExistente != null)
@@ -59,20 +69,32 @@ public class PalpitesController : ControllerBase
         }
         else
         {
-            if (string.IsNullOrEmpty(palpiteRecebido.Id)) palpiteRecebido.Id = Guid.NewGuid().ToString();
-            palpiteRecebido.DataPalpite = DateTime.UtcNow;
+            var novoPalpite = new Palpite
+            {
+                Id = Guid.NewGuid().ToString(), // sempre gerado no servidor, ignora Id vindo do front
+                PartidaId = palpiteRecebido.PartidaId,
+                JogadorId = palpiteRecebido.JogadorId,
+                PlacarMandante = palpiteRecebido.PlacarMandante,
+                PlacarVisitante = palpiteRecebido.PlacarVisitante,
+                DataPalpite = DateTime.UtcNow
+            };
 
-            _context.Palpites.Add(palpiteRecebido);
+            _context.Palpites.Add(novoPalpite);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetMeuPalpite), 
-                new { partidaId = palpiteRecebido.PartidaId, jogadorId = palpiteRecebido.JogadorId }, 
-                palpiteRecebido);
+            return CreatedAtAction(nameof(GetMeuPalpite),
+                new { partidaId = novoPalpite.PartidaId, jogadorId = novoPalpite.JogadorId },
+                novoPalpite);
         }
     }
-    
+
     [HttpDelete("{partidaId}")]
     public async Task<IActionResult> DeletarPalpite(string partidaId, [FromQuery] string jogadorId)
     {
+        if (string.IsNullOrEmpty(jogadorId))
+        {
+            return BadRequest("jogadorId é obrigatório.");
+        }
+
         var palpite = await _context.Palpites
             .FirstOrDefaultAsync(p => p.PartidaId == partidaId && p.JogadorId == jogadorId);
 
@@ -84,6 +106,6 @@ public class PalpitesController : ControllerBase
         _context.Palpites.Remove(palpite);
         await _context.SaveChangesAsync();
 
-        return NoContent(); 
+        return NoContent();
     }
 }
